@@ -1,28 +1,34 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import UUID
 db = SQLAlchemy()
+import uuid
 
-patients = db.Table('patients',
-    db.Column('patient_id', db.Integer, db.ForeignKey('patient.id'), primary_key=True),
-    db.Column('professional_id', db.Integer, db.ForeignKey('professional.id'), primary_key=True)
+
+
+
+patients = db.Table('patients_follow',
+    db.Column('patient_id',  db.Text(length=36), db.ForeignKey('patient.id')),
+    db.Column('professional_id', db.Text(length=36), db.ForeignKey('professional.id'))
 )
 
+
 class Professional(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    speciality= db.Column(db.String(80), unique=True, nullable=False)
+    __tablename__ = 'professional'
+    id = db.Column('id', db.Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    speciality= db.Column(db.String(80), nullable=False)
     longitude= db.Column(db.Integer, primary_key=True)
     latitute= db.Column(db.Integer, primary_key=True)
-    patients = db.relationship('Patient', secondary=patients, lazy='subquery',
-        backref=db.backref('Profesionnal', lazy=True))
+    patients = db.relationship("Patient",
+                               secondary=patients)
 
-    def __init__(self, name,speciality, longitude, latitude, ):
-        self.name = name
-        self.speciality = speciality
-        self.longitude = longitude
-        self.latitude = latitude
+    def __repr__(self):
+        return '<Patient %r>' % self.name
 
 
 class Patient(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'patient'
+    id = db.Column('id', db.Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True)
+
 
 

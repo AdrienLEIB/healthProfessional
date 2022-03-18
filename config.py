@@ -5,6 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = True
 # Connect to the database
-SQLALCHEMY_DATABASE_URI =  'postgresql://postgres:root@localhost/flasksql'
+#SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:root@localhost/flasksql'
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3'
 # Turn off the Flask-SQLAlchemy event system and warning
 SQLALCHEMY_TRACK_MODIFICATIONS = False

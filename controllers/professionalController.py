@@ -8,7 +8,6 @@ db = SQLAlchemy()
 
 def getAll():
     pros = Professional.query.all()
-
     results = [
         {
             "name": pro.name,
@@ -62,19 +61,42 @@ def addPatientToProfessional(professional_id):
     patient = request.form['patient'] if request.form['patient'] else None
     try:
         print("Before qry")
-        qry = Professional.query.filter_by(id=professional_id).filter_by(patients=patient)
+
+        qry1 = Professional.query.filter_by(id=professional_id)
+        results = [
+            {
+                "id": pro.id,
+                "name": pro.name,
+                "speciality": pro.speciality,
+                "longitude": pro.longitude,
+                "latitute": pro.latitute,
+
+            } for pro in qry1]
+
+
+        print(results)
+
+        qry = Professional.query.filter_by(id=professional_id).join(Patient, Patient.id == patient)
+
         print("After qery")
 
-        if len(qry)>0:
+        print(qry)
+
+        if qry is None:
             return "Le patient est déjà inscrit"
 
+        print("BEFORE Second query")
         qryPatient = Patient.query.filter_by(id=patient)
+
+        print("Second query")
 
         if len(qryPatient)==0:
             newPatient = Patient(name="Patient", id=patient)
             db.session.add(newPatient)
             patient = newPatient.id
+            print("after if in if")
 
+        print("after if")
         qryProfesionnal = Professional.query.filter_by(id=professional_id)
         qryProfesionnal[0].patients.append(patient)
         db.session.add()

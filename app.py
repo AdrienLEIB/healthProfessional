@@ -15,7 +15,7 @@ with app.app_context():
 migrate = Migrate(app, db)
 app.register_blueprint(professional_bp, url_prefix='/professionals')
 
-@app.route('/hello')
+@app.route('/')
 def hello_world():  # put application's code here
     return 'Hello World!'
 

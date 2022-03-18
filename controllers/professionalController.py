@@ -1,6 +1,6 @@
 import sys
 from flask import render_template, redirect, url_for, request, abort, jsonify
-from models.Professional import Professional
+from models.Professional import Professional, Patient
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 
@@ -8,6 +8,7 @@ db = SQLAlchemy()
 
 def getAll():
     pros = Professional.query.all()
+
     results = [
         {
             "name": pro.name,
@@ -35,13 +36,13 @@ def create():
         return "400"
 
 
-def show(professionalID):
-    return "titi"
+def getProfessionalBySpeciality():
 
-def getProfessionalBySpeciality(professionalSpeciality):
+    speciality = request.args.get('speciality') if  request.args.get('speciality') else "*"
+    latitude  = request.args.get('latitude') if request.args.get('latitude') else "*"
+    longitude = request.args.get('longitude') if request.args.get('longitude') else "*"
     try:
-        speciality = professionalSpeciality if professionalSpeciality else None
-        pros = Professional.query.filter(Professional.speciality(speciality))
+        qry = Professional.query.filter(Professional.latitute.between(int(latitude)-2, int(latitude)+2)).filter(Professional.longitude.between(int(longitude)-2, int(longitude)+2)).filter_by(speciality=speciality) if type(latitude)==int and type(longitude)==int else Professional.query.filter_by(speciality=speciality)
         results = [
             {
                 "id": pro.id,
@@ -50,11 +51,38 @@ def getProfessionalBySpeciality(professionalSpeciality):
                 "longitude": pro.longitude,
                 "latitute": pro.latitute,
 
-            } for pro in pros]
+            } for pro in qry]
 
         return jsonify(results)
     except:
         return "400"
+
+
+def addPatientToProfessional(professional_id):
+    patient = request.args.get('patient') if request.args.get('patient') else None
+    try:
+        qry = Professional.query.filter_by(id=professional_id).filter_by(patients=patient)
+
+        if len(qry)>0:
+            return "Le patient est déjà inscrit"
+
+        qryPatient = Patient.query.filter_by(id=patient)
+
+        if len(qryPatient)==0:
+            newPatient = Patient(name="Patient")
+            db.session.add(newPatient)
+            patient = newPatient.id
+
+        qryProfesionnal = Professional.query.filter_by(id=professional_id)
+        qryProfesionnal[0].patients.append(patient)
+        db.session.add()
+        db.session.commit()
+
+        return "Success"
+
+    except:
+        return f"<h1>{professional_id}</h1>"
+
 
 def update(professionalID):
     return "toto"

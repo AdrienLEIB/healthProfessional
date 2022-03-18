@@ -59,9 +59,11 @@ def getProfessionalBySpeciality():
 
 
 def addPatientToProfessional(professional_id):
-    patient = request.args.get('patient') if request.args.get('patient') else None
+    patient = request.form['patient'] if request.form['patient'] else None
     try:
+        print("Before qry")
         qry = Professional.query.filter_by(id=professional_id).filter_by(patients=patient)
+        print("After qery")
 
         if len(qry)>0:
             return "Le patient est déjà inscrit"
@@ -69,7 +71,7 @@ def addPatientToProfessional(professional_id):
         qryPatient = Patient.query.filter_by(id=patient)
 
         if len(qryPatient)==0:
-            newPatient = Patient(name="Patient")
+            newPatient = Patient(name="Patient", id=patient)
             db.session.add(newPatient)
             patient = newPatient.id
 
@@ -81,7 +83,7 @@ def addPatientToProfessional(professional_id):
         return "Success"
 
     except:
-        return f"<h1>{professional_id}</h1>"
+        return f"<h1>{professional_id}, {patient}</h1>"
 
 
 def update(professionalID):

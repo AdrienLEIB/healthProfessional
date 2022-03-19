@@ -60,55 +60,27 @@ def getProfessionalBySpeciality():
 def addPatientToProfessional(professional_id):
     patient = request.form['patient'] if request.form['patient'] else None
     try:
-        print("Before qry")
-
-        qry1 = Professional.query.filter_by(id=professional_id)
-        results = [
-            {
-                "id": pro.id,
-                "name": pro.name,
-                "speciality": pro.speciality,
-                "longitude": pro.longitude,
-                "latitute": pro.latitute,
-
-            } for pro in qry1]
-
-
-        print(results)
-
         qry = Professional.query.filter_by(id=professional_id).join(Patient, Patient.id == patient)
-
-        print("After qery")
-
-        print(qry)
-
-        if qry is None:
+        if qry.count()>0:
             return "Le patient est déjà inscrit"
 
-        print("BEFORE Second query")
-        qryPatient = Patient.query.filter_by(id=patient)
+        qryPatient = Patient.query.filter_by(id=patient).first()
 
-        print("Second query")
-
-        if len(qryPatient)==0:
-            newPatient = Patient(name="Patient", id=patient)
+        if qryPatient is None:
+            newPatient = Patient(id=patient)
             db.session.add(newPatient)
-            patient = newPatient.id
-            print("after if in if")
 
-        print("after if")
-        qryProfesionnal = Professional.query.filter_by(id=professional_id)
-        qryProfesionnal[0].patients.append(patient)
-        db.session.add()
+        qryPatient = Patient.query.filter_by(id=patient).first()
+        queue = Professional.query.filter_by(id=professional_id).first()
+        queue.patients.append(qryPatient)
         db.session.commit()
+        return "201"
 
-        return "Success"
-
-    except:
-        return f"<h1>{professional_id}, {patient}</h1>"
+    except Exception as e:
+        return f"<h1>{professional_id}, {patient}, {e}</h1>"
 
 
 def update(professionalID):
-    return "toto"
+    return "update in progress"
 def delete(professionalID):
-    return "it"
+    return "delete in progress"

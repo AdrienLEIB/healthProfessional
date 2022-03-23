@@ -7,17 +7,7 @@ import uuid
 db = SQLAlchemy()
 
 def getAll():
-    pros = Professional.query.all()
-    results = [
-        {
-            "name": pro.name,
-            "speciality": pro.speciality,
-            "longitude": pro.longitude,
-            "latitute": pro.latitute,
-
-        } for pro in pros]
-
-    return jsonify(results)
+    return jsonify([i.serialize for i in Professional.query.all()]) 
 
 
 def create():

@@ -24,6 +24,17 @@ class Professional(db.Model):
     def __repr__(self):
         return '<Patient %r>' % self.name
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        return {
+            'id': self.id,
+            'name':self.name,
+            'speciality': self.speciality,
+            'longitude': self.longitude,
+            'latitude': self.latitute,
+        }
+
 
 class Patient(db.Model):
     __tablename__ = 'patient'

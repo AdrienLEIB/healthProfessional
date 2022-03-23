@@ -7,7 +7,7 @@ import uuid
 db = SQLAlchemy()
 
 def getAll():
-    return jsonify([i.serialize for i in Professional.query.all()]) 
+    return jsonify([i.serialize for i in Professional.query.all()])
 
 
 def create():
